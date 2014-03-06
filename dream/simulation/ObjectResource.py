@@ -33,6 +33,7 @@ class ObjectResource(object):
     
     def __init__(self):
         self.initialized = False
+        self.interruptCause=None
         
     def initialize(self):
         self.totalWorkingTime=0         #holds the total working time
