@@ -29,6 +29,7 @@ schedules the availability of an object according to its shift pattern
 from SimPy.Simulation import now, Process, hold, request, release, infinity
 from RandomNumberGenerator import RandomNumberGenerator
 from ObjectInterruption import ObjectInterruption
+from ObjectResource import ObjectResource
 
 # ===========================================================================
 # the shift scheduler class
@@ -39,6 +40,7 @@ class ShiftScheduler(ObjectInterruption):
     # the __init__() method of the class
     # =======================================================================
     def __init__(self, victim=None, shiftPattern=[], endUnfinished=False):
+        assert victim is not None
         ObjectInterruption.__init__(self,victim)
         self.type='ShiftScheduler'
         self.shiftPattern=shiftPattern
@@ -53,6 +55,13 @@ class ShiftScheduler(ObjectInterruption):
         ObjectInterruption.initialize(self)
         self.remainingShiftPattern=list(self.shiftPattern) 
         
+    def getVictimQueue(self):
+        # if the victim is an operator, it does not have a queue...
+        # This is probably incorrect. - Jerome
+        if isinstance(self.victim, ObjectResource):
+          return []
+        return ObjectInterruption.getVictimQueue(self)
+
     # =======================================================================
     #    The run method for the failure which has to served by a repairman
     # =======================================================================
