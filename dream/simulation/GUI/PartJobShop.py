@@ -6,11 +6,12 @@ import operator
 from datetime import datetime
 
 from dream.simulation.GUI import ACO
+from dream.simulation.GUI import Shifts
 from dream.simulation.GUI.Default import schema
 
 MACHINE_TYPE_SET = set(["Dream.MachineManagedJob", "Dream.MouldAssembly"])
 
-class Simulation(ACO.Simulation):
+class Simulation(ACO.Simulation, Shifts.Simulation):
   def getConfigurationDict(self):
     conf = ACO.Simulation.getConfigurationDict(self)
     conf["Dream-MachineManagedJob"] = {
@@ -70,6 +71,7 @@ class Simulation(ACO.Simulation):
         "name": 'Decompo'
     }
     conf["Dream-Configuration"]["gui"]["wip_part_spreadsheet"] = 1
+    conf["Dream-Configuration"]["gui"]["shift_spreadsheet"] = 1
     conf["Dream-Configuration"]["gui"]["job_schedule_spreadsheet"] = 1
     conf["Dream-Configuration"]["gui"]["job_gantt"] = 1
     conf["Dream-Configuration"]["gui"]["queue_stat"] = 0
@@ -145,6 +147,7 @@ class Simulation(ACO.Simulation):
   def _preprocess(self, in_data):
     """ Set the WIP in queue from spreadsheet data.
     """
+    in_data = Shifts.Simulation._preprocess(self, in_data)
     data = copy(in_data)
     self.data = data
 
