@@ -212,18 +212,19 @@
     var spreadsheet_data = [],
       spreadsheet_header = [
         [
-          "Jobs",
+          //"Jobs",
           "ID",
-          "Project Manager",
-          "Due Date",
-          "Priority",
+          //"Project Manager",
+          //"Due Date",
+          //"Priority",
           "Entrance Time",
           "Processing Time",
           "Station ID",
           "Step No."
         ]
       ],
-      simulation_start_date = new Date(input_data.general.currentDate || now.getTime());
+      simulation_start_date = new Date(Date()|| now.getTime());
+	  //simulation_start_date = new Date(input_data.general.currentDate || now.getTime());
       // TODO: time unit for later 
       //       or an utility function to map sim time to real time & vice
       //       versa.
@@ -254,8 +255,8 @@
             }
           }
 
-          var due_date = new Date(simulation_start_date.getTime() +
-                                  input_order.dueDate * 1000 * 3600);
+          /* var due_date = new Date(simulation_start_date.getTime() +
+                                  input_order.dueDate * 1000 * 3600); */
           $.each(obj['results']['schedule'], function (i, schedule) {
             var entrance_date = new Date(simulation_start_date.getTime() +
                                           // TODO: time unit
@@ -270,14 +271,15 @@
               duration = obj['results']['schedule'][i+1]['entranceTime'] - schedule['entranceTime'];
             }
 
-            spreadsheet_data.push([
+            
+			spreadsheet_data.push([
               // XXX this label is incorrect for design step, during design
               // phase we still have an order and not an order component.
-              input_order.name + "-" + input_job.name,
+              //input_order.name + "-" + input_job.name,
               obj['id'],
-              input_order.manager,
-              moment(due_date).format("YYYY/MM/DD"),
-              input_order.priority,
+              //input_order.manager,
+              //moment(due_date).format("YYYY/MM/DD"),
+              //input_order.priority,
               moment(entrance_date).format("MMM/DD HH:mm"),
               duration,
               schedule['stationId'],
@@ -303,8 +305,8 @@
               result = -1;
             }
           } else {
-            entrance_a = a[4];
-            entrance_b = b[4];
+            entrance_a = a[1];
+            entrance_b = b[1];
             if (entrance_a > entrance_b) {
               result = 1;
             } else if (entrance_a < entrance_b) {
@@ -404,7 +406,7 @@
           }
 
           var duration = 0;
-          if (input_job == input_order) { // if we are on the order definition
+          /*if (input_job == input_order) { // if we are on the order definition
             gantt_data.data.push({
               id: input_order.id,
               text: input_order.name,
@@ -412,7 +414,7 @@
               open: false,
               parent: "by_order"
             });
-          }
+          }*/
 
           var seen_parts = {};
           $.each(obj['results']['schedule'], function (i, schedule) {
@@ -432,25 +434,27 @@
                 // for simulation time unit as days hours
                 task_start_date.setTime(task_start_date.getTime() + schedule['entranceTime']*1000*3600);
 
-                var job_full_id = input_job.id + "." + input_order.id;
-                if (seen_parts[job_full_id] === undefined){
+                //var job_full_id = input_job.id + "." + input_order.id;
+				
+                /*if (seen_parts[job_full_id] === undefined){
                   gantt_data.data.push({
                     id: job_full_id,
                     text: input_job.name,
                     parent: input_order.id
                   });
                   seen_parts[job_full_id] = 1;
-                }
+                }*/
                 gantt_data.data.push({
-                  id: input_order.id + '.' + idx + '_' + i,
+                  //id: input_order.id + '.' + idx + '_' + i,
+				  id: idx + '_' + i,
                   text: schedule['stationId'],
                   start_date: task_start_date,
                   duration: duration,
-                  parent: job_full_id
+                  //parent: job_full_id
                 });
                 gantt_data.data.push({
                   id: 'job.' + obj['id'] + '.' + idx + '_' + i,
-                  text: input_order.name + "-" + input_job.name,
+                  text: '', //input_order.name + "-" + input_job.name,
                   start_date: task_start_date,
                   duration: duration,
                   parent: schedule['stationId'],
