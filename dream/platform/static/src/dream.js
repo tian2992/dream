@@ -220,7 +220,7 @@
           "Entrance Time",
           "Processing Time",
           "Station ID",
-          "Step No."
+          //"Step No."
         ]
       ],
       simulation_start_date = new Date(Date()|| now.getTime());
@@ -283,7 +283,7 @@
               moment(entrance_date).format("MMM/DD HH:mm"),
               duration,
               schedule['stationId'],
-              i
+              //i
             ]);
           });
         }
