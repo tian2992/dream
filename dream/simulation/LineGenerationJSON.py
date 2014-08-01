@@ -1276,38 +1276,40 @@ def createObjectInterruptions():
     # for the elements in the nodes dict
     for (element_id, element) in nodes.iteritems():
         element['id'] = element_id
-        scheduledMaintenance=element.get('scheduledMaintenance', {})
-        # if there is a scheduled maintenance initiate it and append it
-        # to the interruptions- and scheduled maintenances- list
-        if len(scheduledMaintenance):
-            start=float(scheduledMaintenance.get('start', 0))
-            duration=float(scheduledMaintenance.get('duration', 1))
-            victim=Globals.findObjectById(element['id'])
-            SM=ScheduledMaintenance(victim=victim, start=start, duration=duration)
-            G.ObjectInterruptionList.append(SM)
-            G.ScheduledMaintenanceList.append(SM)
-        failure=element.get('failures', None)
-        # if there are failures assigned 
-        # initiate them   
-        if failure:
-            distributionType=failure.get('distributionType', 'No')
-            if distributionType=='No':
-                pass
-            else:
+        interruptions=element.get('interruptions', {})
+        for interruption in interruptions:
+            # if there is a scheduled maintenance initiate it and append it
+            # to the interruptions- and scheduled maintenances- list
+            scheduledMaintenance=interruption.get('scheduledMaintenance', {})
+            if scheduledMaintenance:
+                start=float(scheduledMaintenance.get('start', 0))
+                duration=float(scheduledMaintenance.get('duration', 1))
                 victim=Globals.findObjectById(element['id'])
-                F=Failure(victim, distribution=failure, repairman=victim.repairman)
-                G.ObjectInterruptionList.append(F)
-                G.FailureList.append(F)
-        # if there is a shift pattern defined 
-        # initiate them             
-        shift=element.get('shift', {})
-        if len(shift):
-            victim=Globals.findObjectById(element['id'])
-            shiftPattern=list(shift.get('shiftPattern', []))
-            endUnfinished=bool(int(shift.get('endUnfinished', 0)))
-            SS=ShiftScheduler(victim, shiftPattern, endUnfinished)
-            G.ObjectInterruptionList.append(SS)
-            G.ShiftSchedulerList.append(SS)
+                SM=ScheduledMaintenance(victim=victim, start=start, duration=duration)
+                G.ObjectInterruptionList.append(SM)
+                G.ScheduledMaintenanceList.append(SM)
+            # if there are failures assigned 
+            # initiate them   
+            failure=interruption.get('failures', {})
+            if failure:
+                distributionType=failure.get('distributionType', 'No')
+                if distributionType=='No':
+                    pass
+                else:
+                    victim=Globals.findObjectById(element['id'])
+                    F=Failure(victim, distribution=failure, repairman=victim.repairman)
+                    G.ObjectInterruptionList.append(F)
+                    G.FailureList.append(F)
+            # if there is a shift pattern defined 
+            # initiate them             
+            shift=interruption.get('shift', {})
+            if len(shift):
+                victim=Globals.findObjectById(element['id'])
+                shiftPattern=list(shift.get('shiftPattern', []))
+                endUnfinished=bool(int(shift.get('endUnfinished', 0)))
+                SS=ShiftScheduler(victim, shiftPattern, endUnfinished)
+                G.ObjectInterruptionList.append(SS)
+                G.ShiftSchedulerList.append(SS)
                 
 # ===========================================================================
 #        used to convert a string read from the input to object type
