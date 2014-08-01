@@ -68,7 +68,7 @@
             "_class": "Dream.Machine",
             "interruptions": [
                 {
-                    "failures": {
+                    "failure": {
                         "MTTF": 60,
                         "MTTR": 5,
                         "distributionType": "Fixed"
@@ -87,7 +87,7 @@
             "_class": "Dream.Machine",
             "interruptions": [
                 {
-                    "failures": {
+                    "failure": {
                         "MTTF": 40,
                         "MTTR": 10,
                         "distributionType": "Fixed"
@@ -104,7 +104,7 @@
         },
         "M3": {
             "_class": "Dream.Machine",
-            "failures": {
+            "failure": {
                 "distributionType": "No"
             },
             "left": 0.296875,

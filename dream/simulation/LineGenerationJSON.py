@@ -1290,7 +1290,7 @@ def createObjectInterruptions():
                 G.ScheduledMaintenanceList.append(SM)
             # if there are failures assigned 
             # initiate them   
-            failure=interruption.get('failures', {})
+            failure=interruption.get('failure', {})
             if failure:
                 distributionType=failure.get('distributionType', 'No')
                 if distributionType=='No':
