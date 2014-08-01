@@ -59,11 +59,15 @@
         },
         "M1": {
             "_class": "Dream.Machine",
-            "failures": {
-                "MTTF": 60,
-                "MTTR": 5,
-                "distributionType": "Fixed"
-            },
+            "interruptions": [
+                {
+                    "failures": {
+                        "MTTF": 60,
+                        "MTTR": 5,
+                        "distributionType": "Fixed"
+                    }
+                }
+            ],
             "id": "M1",
             "name": "Machine1",
             "processingTime": {
@@ -73,11 +77,15 @@
         },
         "M2": {
             "_class": "Dream.Machine",
-            "failures": {
-                "MTTF": 40,
-                "MTTR": 10,
-                "distributionType": "Fixed"
-            },
+            "interruptions": [
+                {
+                    "failures": {
+                        "MTTF": 40,
+                        "MTTR": 10,
+                        "distributionType": "Fixed"
+                    }
+                }
+            ],
             "id": "M2",
             "name": "Machine2",
             "processingTime": {

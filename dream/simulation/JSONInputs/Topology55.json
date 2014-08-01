@@ -55,23 +55,27 @@
                 "distributionType": "Fixed",
                 "mean": 0.5
             },
-            "shift": {
-                "endUnfinished": 1,
-                "shiftPattern": [
-                    [
-                        0,
-                        4.75
-                    ],
-                    [
-                        9,
-                        11
-                    ],
-                    [
-                        17,
-                        19
-                    ]
-                ]
-            }
+            "interruptions": [
+                {
+                    "shift": {
+                        "endUnfinished": 1,
+                        "shiftPattern": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                9,
+                                11
+                            ],
+                            [
+                                17,
+                                19
+                            ]
+                        ]
+                    }
+                }
+            ]
         },
         "M2": {
             "_class": "Dream.Machine",
@@ -79,7 +83,7 @@
             "name": "Machine2",
             "processingTime": {
                 "distributionType": "Fixed",
-                "mean": 1.0
+                "mean": 1
             }
         },
         "Q1": {

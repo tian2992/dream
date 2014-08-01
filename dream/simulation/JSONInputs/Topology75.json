@@ -34,23 +34,27 @@
                 "distributionType": "Fixed",
                 "mean": 1.5
             },
-            "shift": {
-                "endUnfinished": 1,
-                "shiftPattern": [
-                    [
-                        3,
-                        5
-                    ],
-                    [
-                        9,
-                        11
-                    ],
-                    [
-                        17,
-                        19
-                    ]
-                ]
-            },
+            "interruptions": [
+                {
+                    "shift": {
+                        "endUnfinished": 1,
+                        "shiftPattern": [
+                            [
+                                3,
+                                5
+                            ],
+                            [
+                                9,
+                                11
+                            ],
+                            [
+                                17,
+                                19
+                            ]
+                        ]
+                    }
+                }
+            ],
             "top": 0.5
         },
         "S1": {
@@ -58,7 +62,7 @@
             "entity": "Dream.Part",
             "interarrivalTime": {
                 "distributionType": "Fixed",
-                "mean": 1.0
+                "mean": 1
             },
             "left": 0.5,
             "name": "Raw Material",

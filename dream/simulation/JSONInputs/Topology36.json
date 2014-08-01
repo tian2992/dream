@@ -42,10 +42,14 @@
                 "distributionType": "Fixed",
                 "mean": 0.25
             },
-            "scheduledMaintenance": {
-                "duration": "60",
-                "start": "120"
-            },
+            "interruptions": [
+                {
+					"scheduledMaintenance": {
+						"duration": "60",
+						"start": "120"
+					}
+                }
+            ],
             "top": 0.5
         },
         "Q1": {

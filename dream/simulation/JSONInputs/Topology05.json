@@ -58,12 +58,15 @@
         },
         "M1": {
             "_class": "Dream.Machine",
-            "failures": {
-                "MTTF": 60,
-                "MTTR": 5,
-                "distributionType": "Fixed",
-                "repairman": "None"
-            },
+            "interruptions": [
+                {
+                    "failures": {
+                        "MTTF": 60,
+                        "MTTR": 5,
+                        "distributionType": "Fixed"
+                    }
+                }
+            ],
             "left": 0.5,
             "name": "Moulding",
             "processingTime": {
@@ -74,12 +77,15 @@
         },
         "M2": {
             "_class": "Dream.Machine",
-            "failures": {
-                "MTTF": 40,
-                "MTTR": 10,
-                "distributionType": "Fixed",
-                "repairman": "None"
-            },
+            "interruptions": [
+                {
+                    "failures": {
+                        "MTTF": 40,
+                        "MTTR": 10,
+                        "distributionType": "Fixed"
+                    }
+                }
+            ],
             "left": 0.5,
             "name": "Machine2",
             "processingTime": {
