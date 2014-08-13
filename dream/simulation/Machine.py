@@ -613,9 +613,6 @@ class Machine(CoreObject):
             G.pendingEntities.append(activeObjectQueue[0])
         # set the variable that flags an Entity is ready to be disposed 
         self.waitToDispose=True
-        #do this so that if it is overtime working it is not counted as off-shift time
-        if not self.onShift and self.interruptedBy=='ShiftScheduler':
-            self.timeLastShiftEnded=self.env.now
         # update the total working time 
         # the total processing time for this entity is what the distribution initially gave
         if not self.shouldPreempt:
@@ -649,6 +646,9 @@ class Machine(CoreObject):
                     self.endedLastProcessing.succeed(self.env.now)
                     interruption.waitinSignal=False
                     self.isWorkingOnTheLast=False
+            # set timeLastShiftEnded attribute so that if it is overtime working it is not counted as off-shift time
+            if self.interruptedBy=='ShiftScheduler':
+                self.timeLastShiftEnded=self.env.now
     
     # =======================================================================
     # actions to be carried out when the processing of an Entity ends
