@@ -226,8 +226,6 @@ class Machine(CoreObject):
         G.MachineList.append(self)                             # add machine to global MachineList
         if self.operatorPool!="None":
             G.OperatedMachineList.append(self)                 # add the machine to the operatedMachines List
-        G.ObjList.append(self)                                 # add machine to ObjList
-
    
     # =======================================================================
     # initialize the machine
