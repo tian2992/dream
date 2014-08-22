@@ -93,8 +93,18 @@
    }
   }, 
   {
+   "_class": "Dream.Machine", 
+   "id": "MA1", 
+   "results": {
+    "blockage_ratio": 0.0, 
+    "failure_ratio": 0.0, 
+    "waiting_ratio": 80.0, 
+    "working_ratio": 20.0
+   }
+  }, 
+  {
    "_class": "Dream.Job", 
-   "id": "M1", 
+   "id": "Mo1", 
    "results": {
     "completionTime": 5.0, 
     "schedule": [
@@ -107,16 +117,6 @@
       "stationId": "E1"
      }
     ]
-   }
-  }, 
-  {
-   "_class": "Dream.Machine", 
-   "id": "MA1", 
-   "results": {
-    "blockage_ratio": 0.0, 
-    "failure_ratio": 0.0, 
-    "waiting_ratio": 80.0, 
-    "working_ratio": 20.0
    }
   }, 
   {
