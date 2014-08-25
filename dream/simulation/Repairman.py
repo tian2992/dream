@@ -35,7 +35,7 @@ from Operator import Operator
 # ===========================================================================
 class Repairman(Operator):
     class_name = 'Dream.Repairman'
-    def __init__(self, id, name, capacity=1):
+    def __init__(self, id, name, capacity=1,**kw):
         Operator.__init__(self,id=id, name=name, capacity=capacity)
         self.type="Repairman"
         from Globals import G

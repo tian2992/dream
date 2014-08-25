@@ -38,7 +38,7 @@ class Operator(ObjectResource):
     class_name = 'Dream.Operator'
     
     
-    def __init__(self, id, name, capacity=1, schedulingRule='FIFO', skills=[], available=True):
+    def __init__(self, id, name, capacity=1, schedulingRule='FIFO', skills=[], available=True,**kw):
         ObjectResource.__init__(self)
         self.id=id
         self.objName=name

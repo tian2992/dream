@@ -36,7 +36,7 @@ from CoreObject import CoreObject
 class Exit(CoreObject):
     class_name = 'Dream.Exit'
     
-    def __init__(self, id='', name='', inputsDict={}):
+    def __init__(self, id, name, **kw):
         self.type="Exit" # XXX needed ?
         #lists to hold statistics of multiple runs
         self.Exits=[]
