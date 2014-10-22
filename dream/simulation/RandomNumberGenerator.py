@@ -25,6 +25,9 @@ Created on 14 Feb 2013
 '''
 holds methods for generations of numbers from different distributions
 '''
+
+import math
+
 class RandomNumberGenerator(object):
     def __init__(self, obj, distributionType, mean=0, stdev=0, min=0, max=0, alpha=0, beta=0,
                  logmean=0,logsd=0, probability=0, shape=0, scale=0, location=0):
@@ -42,8 +45,6 @@ class RandomNumberGenerator(object):
         self.scale=float(scale or 0)
         self.location=float(location or 0)
         self.obj = obj
-
-        
 
     def generateNumber(self):
         from Globals import G
@@ -64,6 +65,35 @@ class RandomNumberGenerator(object):
                     return number
         elif self.distributionType=="Erlang":    #if the distribution is erlang          
             return G.Rnd.gammavariate(self.alpha, self.beta)
+        elif(self.distributionType=="Logistic"):     #if the distribution is Logistic
+            # XXX from http://stackoverflow.com/questions/3955877/generating-samples-from-the-logistic-distribution
+            # to check
+            while 1:
+                x = G.Rnd.random()
+                number=self.location + self.scale * math.log(x / (1-x))
+                if number>0:
+                    return number
+                else:
+                    continue
+        elif(self.distributionType=="Geometric"):     #if the distribution is Geometric
+            return G.numpyRnd.random.geometric(self.probability)
+        elif(self.distributionType=="Lognormal"):     #if the distribution is Lognormal
+            # XXX from the files lognormvariate(mu, sigma)
+            # it would be better to use same mean,stdev
+            return G.Rnd.lognormvariate(self.logmean, self.logsd)
+        elif(self.distributionType=="Weibull"):     #if the distribution is Weibull
+            return G.Rnd.weibullvariate(self.scale, self.shape)
+        elif(self.distributionType=="Cauchy"):     #if the distribution is Cauchy
+            # XXX from http://www.johndcook.com/python_cauchy_rng.html
+            while 1:
+                p = 0.0
+                while p == 0.0:
+                    p = G.Rnd.random()     
+                number=self.location + self.scale*math.tan(math.pi*(p - 0.5))
+                if number>0:
+                    return number
+                else:
+                    continue
         else:
             raise ValueError("Unknown distribution %r used in %s %s" %
                             (self.distributionType, self.obj.__class__, self.obj.id))
