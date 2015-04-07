@@ -50,6 +50,7 @@ class CapacityProjectGantt(plugin.OutputPreparationPlugin, TimeSupportMixin):
       # return the result to the gadget
       result[self.configuration_dict['output_id']] = dict(
         time_unit=self.getTimeUnitText(),
+        subscales=[dict(unit="day", step=1, date="%d-%m-%Y")],
         task_list=sorted(task_dict.values(),
           key=lambda task: (task.get('parent'),
                             task.get('type') == 'project',
