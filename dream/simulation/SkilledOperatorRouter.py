@@ -150,6 +150,7 @@ class SkilledRouter(Router):
                     for record in self.solutionList:
                         if station.id in record["allocation"].values():
                             lastAssignmentTime=record["time"]
+                    # XXX this is provisional and expects a naming convention for machines that belong to the same group
                     machineID=station.id[-1]
                     stationID=station.id[:3]
                     self.availableStationsDict[str(station.id)]={'stationID':stationID,'machineID':machineID, 
@@ -160,6 +161,7 @@ class SkilledRouter(Router):
                 self.operators={}
                 for operator in G.OperatorsList:
                     self.operators[str(operator.id)]=operator.skillsList
+                # XXX this is provisional and expects a naming convention for machines that belong to the same group
                 for operatorId,skillsList in self.operators.iteritems():
                     newSkillsList=[]
                     for skill in skillsList:
