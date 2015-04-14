@@ -150,14 +150,24 @@ class SkilledRouter(Router):
                     for record in self.solutionList:
                         if station.id in record["allocation"].values():
                             lastAssignmentTime=record["time"]
-                    self.availableStationsDict[str(station.id)]={'stationID':str(station.id),'WIP':station.wip, 
-                                                                 'lastAssignment':0}
+                    machineID=station.id[-1]
+                    stationID=station.id[:3]
+                    self.availableStationsDict[str(station.id)]={'stationID':stationID,'machineID':machineID, 
+                                                                 'WIP':station.wip,'lastAssignment':0}
                 #===================================================================
                 # # operators and their skills set
                 #===================================================================
                 self.operators={}
                 for operator in G.OperatorsList:
                     self.operators[str(operator.id)]=operator.skillsList
+                for operatorId,skillsList in self.operators.iteritems():
+                    newSkillsList=[]
+                    for skill in skillsList:
+                        skill=skill[:3]
+                        if skill not in newSkillsList:
+                            newSkillsList.append(skill)
+                    self.operators[str(operatorId)]=newSkillsList
+                    
                 #===================================================================
                 # # available operators
                 #===================================================================
@@ -173,7 +183,9 @@ class SkilledRouter(Router):
                     # in case there are not available stations or operators there is no need to call the LP
                     if (not self.availableStationsDict) or (not self.availableOperatorList):
                         LPFlag=False
-                        
+                
+                import time
+                start=time.time()
                 #===================================================================
                 # # XXX run the LP assignment algorithm
                 # #     should return a list of correspondences
@@ -191,7 +203,8 @@ class SkilledRouter(Router):
                     solution={}
 #                 print '-------'
 #                 print self.env.now, solution
-                
+#                 print 'time:',time.time()-start
+#                 
                 self.solutionList.append({
                     "time":self.env.now,
                     "allocation":solution
