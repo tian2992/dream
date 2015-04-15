@@ -29,6 +29,7 @@ class BatchesACO(ACO):
             if not unitsThroughput:
                 unitsThroughput=element['results']['throughput'][0]
     # return the negative value since they are ranked this way. XXX discuss this
+    print ant['key'],unitsThroughput
     return -unitsThroughput
 
   # creates the collated scenarios, i.e. the list 
@@ -73,6 +74,8 @@ class BatchesACO(ACO):
     return False
 
   def run(self, data):
+    import time
+    start=time.time()
     ant_data = copy(data)
     # if there are no operators act as default execution plugin
     if not self.checkIfThereAreOperators(data):
@@ -84,4 +87,5 @@ class BatchesACO(ACO):
     data['general']['numberOfSolutions']=1  # default of 1 solution for this instance
     data["general"]["distributorURL"]=None  # no distributor currently, to be added in the GUI
     ACO.run(self, data)
+    print 'ACO time',time.time()-start
     return data
