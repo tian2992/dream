@@ -20,6 +20,18 @@
           "name": "Length of experiment", 
           "type": "number"
         }, 
+        "numberOfAntsPerGenerations": {
+          "default": 5, 
+          "description": "Number of scenarios per optimization generation", 
+          "title": "Number of scenarios per optimization generation", 
+          "type": "integer"
+        }, 
+        "numberOfGenerations": {
+          "default": 1, 
+          "description": "Number of optimization generations", 
+          "title": "Number of optimization generations", 
+          "type": "integer"
+        }, 
         "numberOfReplications": {
           "default": 10, 
           "description": "Number of replications to run", 
@@ -67,18 +79,6 @@
           ], 
           "name": "Output Trace", 
           "type": "string"
-        },
-        "numberOfGenerations":{
-          "default": 1,
-          "title": "Number of optimization generations",
-          "description" : "Number of optimization generations",
-          "type": "integer"
-        },
-        "numberOfAntsPerGenerations":{
-          "default": 5,
-          "title": "Number of scenarios per optimization generation",
-          "description": "Number of scenarios per optimization generation",
-          "type": "integer"
         }
       }
     }, 
@@ -97,31 +97,31 @@
         "configuration": {
           "columns": [
             {
-              "name": "",
+              "name": "", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj1: Max number of assigned PB",
+              "name": "Obj1: Max number of assigned PB", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj2: Assignment to machines with higher WIP",
+              "name": "Obj2: Assignment to machines with higher WIP", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj3: Min assignment variations",
+              "name": "Obj3: Min assignment variations", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj4: Uniform assignment across stations",
+              "name": "Obj4: Uniform assignment across stations", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj5: Machines with furthest last assignment time",
+              "name": "Obj5: Machines with furthest last assignment time", 
               "type": "string"
-            },
+            }, 
             {
-              "name": "Obj6: Fill sub-line",
+              "name": "Obj6: Fill sub-line", 
               "type": "string"
             }
           ]
@@ -1196,7 +1196,7 @@
     "currentDate": "2015/02/16 07:00", 
     "ke_url": "http://git.erp5.org/gitweb/dream.git/blob_plain/HEAD:/dream/KnowledgeExtraction/Mockup_Processingtimes.xls", 
     "maxSimTime": 540, 
-    "name": "BatchFullModelOperators.json", 
+    "name": "BatchFullModelOperatorsACO.json", 
     "numberOfReplications": 1, 
     "processTimeout": 1000, 
     "seed": 1, 
@@ -2174,11 +2174,60 @@
   }, 
   "input": {
     "ACO_weights_spreadsheet": [
-		["","Obj1: Max number of assigned PB","Obj2: Assignment to machines with higher WIP","Obj3: Min assignment variations","Obj4: Uniform assignment across stations","Obj5: Machines with furthest last assignment time","Obj6: Fill sub-line"],
-		["Min weight value",0.5,1.5,0,0.5,0.5,1],
-		["Max weight value",1.5,2.5,1,1.5,1.5,2],
-		["Step",0.1,0.1,0.1,0.1,0.1,0.1],
-		["Static weight value","","","","","",""]
+      [
+        "", 
+        "Assignment to machines with higher WIP", 
+        "Uniform assignment across stations", 
+        "Min assignment variations", 
+        "Fill sub-line", 
+        "Machines with furthest last assignment time", 
+        "Max number of assigned PB"
+      ], 
+      [
+        "Min weight value", 
+        "1.5", 
+        "0.5", 
+        "0", 
+        "1", 
+        "0.5", 
+        "0.5"
+      ], 
+      [
+        "Max weight value", 
+        "2.5", 
+        "1.5", 
+        "1", 
+        "2", 
+        "1.5", 
+        "1.5"
+      ], 
+      [
+        "Step", 
+        "0.1", 
+        "0.1", 
+        "0.1", 
+        "0.1", 
+        "0.1", 
+        "0.1"
+      ], 
+      [
+        "Static weight value", 
+        "", 
+        "", 
+        "", 
+        "", 
+        "", 
+        ""
+      ], 
+      [
+        null, 
+        null, 
+        null, 
+        null, 
+        null, 
+        null, 
+        null
+      ]
     ], 
     "machine_shift_spreadsheet": [
       [
@@ -2349,7 +2398,7 @@
         "", 
         ""
       ]
-    ], 	
+    ], 
     "wip_spreadsheet": [
       [
         "ID", 
