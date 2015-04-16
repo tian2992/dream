@@ -53,6 +53,7 @@ class ACO(plugin.ExecutionPlugin):
     """Preprocess the data.
     """
     distributor_url = data['general'].get('distributorURL')
+    #distributor_url='https://dream:dream@softinst57831.host.vifib.net/erp5/portal_task_distribution/dream_distributor'
     distributor = None
     if distributor_url:
         distributor = xmlrpclib.Server(distributor_url)
@@ -104,11 +105,12 @@ class ACO(plugin.ExecutionPlugin):
 
         else: # asynchronous
             self.logger.info("Registering a job for %s scenarios" % len(scenario_list))
+            print "Registering a job for %s scenarios" % len(scenario_list)
             start_register = time.time()
             job_id = distributor.requestSimulationRun(
                 [json.dumps(x).encode('zlib').encode('base64') for x in scenario_list])
             self.logger.info("Job registered as %s (took %0.2fs)" % (job_id, time.time() - start_register ))
-
+            print "Job registered as %s (took %0.2fs)" % (job_id, time.time() - start_register )
             while True:
                 time.sleep(1.)
                 result_list = distributor.getJobResult(job_id)
@@ -119,7 +121,13 @@ class ACO(plugin.ExecutionPlugin):
                     break
 
             for ant, result in zip(scenario_list, result_list):
-                ant['result'] = json.loads(result)['result']
+                result = json.loads(result)
+                if 'result' in result: # XXX is this still needed ???
+                  result = result['result']
+                  assert "result_list" in result
+                else:
+                  result = {'result_list': [result]}
+                ant['result'] = result
 
         for ant in scenario_list:
             ant['score'] = self._calculateAntScore(ant)
