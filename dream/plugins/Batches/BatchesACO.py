@@ -28,6 +28,7 @@ class BatchesACO(ACO):
                 unitsThroughput=unitsThroughput[0]
             if not unitsThroughput:
                 unitsThroughput=element['results']['throughput'][0]
+    print ant['key'],unitsThroughput
     # return the negative value since they are ranked this way. XXX discuss this
     return -unitsThroughput
 
@@ -74,6 +75,8 @@ class BatchesACO(ACO):
 
   def run(self, data):
     ant_data = copy(data)
+    import time
+    start=time.time()
     # if there are no operators act as default execution plugin
     if not self.checkIfThereAreOperators(data):
       data["result"]["result_list"] = self.runOneScenario(data)['result']['result_list']
@@ -89,4 +92,5 @@ class BatchesACO(ACO):
     ACO.run(self, data)
     data["result"]["result_list"][-1]["score"] = ''
     data["result"]["result_list"][-1]["key"] = "Go To Results Page"
+    print 'ACO time',time.time()-start
     return data

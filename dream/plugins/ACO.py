@@ -80,6 +80,7 @@ class ACO(plugin.ExecutionPlugin):
     # generation can have more than 1 ant)
     seedPlus = 0
     for i in range(int(data["general"]["numberOfGenerations"])):
+        print 'generation',i
         scenario_list = [] # for the distributor
         # number of ants created per generation
         for j in range(int(data["general"]["numberOfAntsPerGenerations"])):
