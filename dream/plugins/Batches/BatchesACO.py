@@ -85,7 +85,8 @@ class BatchesACO(ACO):
       return data
     # else run ACO
     data['general']['numberOfSolutions']=1  # default of 1 solution for this instance
-    data["general"]["distributorURL"]=None  # no distributor currently, to be added in the GUI
+    #data["general"]["distributorURL"]=None  # no distributor currently, to be added in the GUI
+    data["general"]["distributorURL"]="https://dream:dream@softinst57831.host.vifib.net/erp5/portal_task_distribution/dream_distributor"
     ACO.run(self, data)
     data["result"]["result_list"][-1]["score"] = ''
     data["result"]["result_list"][-1]["key"] = "Go To Results Page"
