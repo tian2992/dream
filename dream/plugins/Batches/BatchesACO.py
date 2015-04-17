@@ -85,7 +85,7 @@ class BatchesACO(ACO):
       return data
     # else run ACO
     data['general']['numberOfSolutions']=1  # default of 1 solution for this instance
-    data["general"]["distributorURL"]=None  # no distributor currently, to be added in the GUI
+    #data["general"]["distributorURL"]=None  # no distributor currently, to be added in the GUI
     # use multiprocessing in the PC. This can be an option, but default for now
     import multiprocessing                  
     data["general"]["multiprocessorCount"] = multiprocessing.cpu_count()-1 or 1

@@ -126,10 +126,12 @@ class ACO(plugin.ExecutionPlugin):
         
         else: # asynchronous
             self.logger.info("Registering a job for %s scenarios" % len(scenario_list))
+            print "Registering a job for %s scenarios" % len(scenario_list)
             start_register = time.time()
             job_id = distributor.requestSimulationRun(
                 [json.dumps(x).encode('zlib').encode('base64') for x in scenario_list])
             self.logger.info("Job registered as %s (took %0.2fs)" % (job_id, time.time() - start_register ))
+            print "Job registered as %s (took %0.2fs)" % (job_id, time.time() - start_register )
 
             while True:
                 time.sleep(1.)
@@ -138,6 +140,7 @@ class ACO(plugin.ExecutionPlugin):
                 # or the list of result in the same order.
                 if result_list is not None:
                     self.logger.info("Job %s terminated" % job_id)
+                    print "Job %s terminated" % job_id
                     break
 
             for ant, result in zip(scenario_list, result_list):
