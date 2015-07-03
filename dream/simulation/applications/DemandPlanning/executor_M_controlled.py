@@ -55,7 +55,6 @@ def main(input, algorithmAttributes):
             
             G.minDeltaUt = i
             G.ACO = j
-            logger.info('start ACO')
             bestAnt = AllocManagement_Hybrid2(None)
             
             # salvare risultati
