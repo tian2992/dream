@@ -85,9 +85,10 @@ class BottleNeckByWeek(plugin.OutputPreparationPlugin, TimeSupportMixin):
 
     for week, bottleneckData in by_week.items():
       series = []
-      ticks = list(enumerate(bottleneckData.keys()))
+      #ticks = list(enumerate(bottleneckData.keys()))
+      ticks = list(enumerate(G.Bottlenecks))
       
-      options = {
+      options = { 
         "xaxis": {
           "minTickSize": 1,
           "ticks": ticks

@@ -29,7 +29,7 @@ from ImportInput import ImportInput
 from outputResults import outputResults
 from Globals import G, initialiseVar
 import time
-from numpy import mean, std, array
+from numpy import mean, std, array, absolute
 from operator import itemgetter
 
 def main(input, algorithmAttributes):
@@ -53,6 +53,11 @@ def main(input, algorithmAttributes):
             print 'start ACO', G.ACO, 'minDelta', G.minDeltaUt
             bestAnt = AllocManagement_Hybrid2(None)
             
+            G.minDeltaUt = i
+            G.ACO = j
+            logger.info('start ACO')
+            bestAnt = AllocManagement_Hybrid2(None)
+            
             # salvare risultati
             G.Summary[(G.ACO,G.minDeltaUt)] = {'scenario':(G.ACO,G.minDeltaUt)}
             for key in G.LateMeasures.keys():
@@ -70,7 +75,7 @@ def main(input, algorithmAttributes):
                     utilisation.append(float(G.Capacity[bottleneck][week]['OriginalCapacity']-G.CurrentCapacityDict[bottleneck][week])/G.Capacity[bottleneck][week]['OriginalCapacity'])
                     targetUt.append((G.Capacity[bottleneck][week]['targetUtilisation']-float(G.Capacity[bottleneck][week]['OriginalCapacity']-G.CurrentCapacityDict[bottleneck][week])/G.Capacity[bottleneck][week]['OriginalCapacity'])/G.Capacity[bottleneck][week]['targetUtilisation'])
             G.Summary[(G.ACO,G.minDeltaUt)]['utilisation'] = mean(array(utilisation))
-            G.Summary[(G.ACO,G.minDeltaUt)]['targetM'] = mean(array(targetUt))
+            G.Summary[(G.ACO,G.minDeltaUt)]['targetM'] = mean(absolute(array(targetUt)))
             G.Summary[(G.ACO,G.minDeltaUt)]['targetStd'] = std(array(targetUt))
             if G.ACO:
                 G.Summary[(G.ACO,G.minDeltaUt)]['ant'] = bestAnt
@@ -81,7 +86,7 @@ def main(input, algorithmAttributes):
     # selection
     listSummary = [G.Summary[item] for item in G.Summary.keys()]
     print 'list summary', listSummary
-    listSummary = sorted(listSummary, key=itemgetter('exUnits', 'lateness', 'targetStd', 'utilisation','targetM',  'earliness'))
+    listSummary = sorted(listSummary, key=itemgetter('exUnits', 'lateness', 'targetStd','targetM', 'utilisation',  'earliness'))
     
     bestScenario = listSummary[0]['scenario']
     aco = bestScenario[0]
