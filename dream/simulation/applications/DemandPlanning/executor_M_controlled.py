@@ -29,18 +29,21 @@ from ImportInput import ImportInput
 from outputResults import outputResults
 from Globals import G, initialiseVar
 import time
-from numpy import mean, std, array
+from numpy import mean, std, array, absolute
 from operator import itemgetter
+import logging
 
 def main(input, algorithmAttributes):
     
+    logger = logging.getLogger("dream.platform")
     startTime = time.time()
+    logger.info('hello')
     ImportInput(input, algorithmAttributes)   
     if G.ACO == "all":
         G.acoRange = [0,1]
         G.minRange = {0:[0,1],1:[0,1]}
     elif G.ACO == "1":
-        G.acoRange = [0,1]
+        G.acoRange = [1]
         G.minRange = {0:[0,1],1:[G.minDeltaUt]}
     else:
         G.acoRange = [0]
@@ -49,9 +52,10 @@ def main(input, algorithmAttributes):
     for j in G.acoRange:
         for i in G.minRange[j]:            
             initialiseVar() 
+            
             G.minDeltaUt = i
             G.ACO = j
-            print 'start ACO', G.ACO, 'minDelta', G.minDeltaUt
+            logger.info('start ACO')
             bestAnt = AllocManagement_Hybrid2(None)
             
             # salvare risultati
@@ -71,7 +75,7 @@ def main(input, algorithmAttributes):
                     utilisation.append(float(G.Capacity[bottleneck][week]['OriginalCapacity']-G.CurrentCapacityDict[bottleneck][week])/G.Capacity[bottleneck][week]['OriginalCapacity'])
                     targetUt.append((G.Capacity[bottleneck][week]['targetUtilisation']-float(G.Capacity[bottleneck][week]['OriginalCapacity']-G.CurrentCapacityDict[bottleneck][week])/G.Capacity[bottleneck][week]['OriginalCapacity'])/G.Capacity[bottleneck][week]['targetUtilisation'])
             G.Summary[(G.ACO,G.minDeltaUt)]['utilisation'] = mean(array(utilisation))
-            G.Summary[(G.ACO,G.minDeltaUt)]['targetM'] = mean(array(targetUt))
+            G.Summary[(G.ACO,G.minDeltaUt)]['targetM'] = mean(absolute(array(targetUt)))
             G.Summary[(G.ACO,G.minDeltaUt)]['targetStd'] = std(array(targetUt))
             if G.ACO:
                 G.Summary[(G.ACO,G.minDeltaUt)]['ant'] = bestAnt
@@ -82,7 +86,7 @@ def main(input, algorithmAttributes):
     # selection
     listSummary = [G.Summary[item] for item in G.Summary.keys()]
     print 'list summary', listSummary
-    listSummary = sorted(listSummary, key=itemgetter('exUnits', 'lateness', 'targetStd', 'utilisation','targetM',  'earliness'))
+    listSummary = sorted(listSummary, key=itemgetter('exUnits', 'lateness', 'targetStd','targetM', 'utilisation',  'earliness'))
     
     bestScenario = listSummary[0]['scenario']
     aco = bestScenario[0]

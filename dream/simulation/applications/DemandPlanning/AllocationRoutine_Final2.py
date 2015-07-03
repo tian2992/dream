@@ -224,7 +224,7 @@ def choseMA2(allResults, possibleSolutions, MAlist, weeklist):      # more simil
                 minUtil.append(mean(array(minU)))
                 targetUtil.append(mean(absolute(targetU)))
                         
-            res.append([ma, allResults[ma]['remainingUnits'], allResults[ma]['lateness'], std(array(targetUtil)), std(array(minUtil)), allResults[ma]['earliness']])
+            res.append([ma, allResults[ma]['remainingUnits'], allResults[ma]['lateness'], mean(array(targetUtil)), std(array(minUtil)), allResults[ma]['earliness']])
 
         # order results...1st criterion: target utilisation (stdDev), 2nd criterion: min utilisation(stdDev)
         sortedMA = sorted(res, key=itemgetter(1, 2, 3, 4, 5))

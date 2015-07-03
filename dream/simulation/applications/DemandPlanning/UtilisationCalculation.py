@@ -56,7 +56,7 @@ def utilisationCalc1(ACOcapacityDict, initialWeek, ind):
         minUtil.append(mean(array(minU)))
         targetUtil.append(mean(absolute(targetU)))
         
-    ACOtargetUtil = std(array(targetUtil))    #mean(array(targetUtil)) #FIXME: potrebbe essere std(array(targetUtil))
+    ACOtargetUtil = mean(array(targetUtil))    #mean(array(targetUtil)) #FIXME: potrebbe essere std(array(targetUtil))
     ACOminUtil = mean(array(minUtil))*-1
     
     return ACOtargetUtil, ACOminUtil
