@@ -35,6 +35,10 @@ class ReadExcelEasyWIP(plugin.InputPreparationPlugin):
             workingBatchSize=nodes[stationId]['workingBatchSize']    
             assert stationId in nodes.keys(), "WIP spreadsheet has "+ stationId +" that does not exist in the graph"  
             buffered=row[1]
+            notStarted=row[2]
+            complete=row[3]
+            inProgress=row[4]
+            batchId=row[5]
             # check for buffered batches of sub-batches
             if buffered:
                 # get the buffer id and also if there is decomposition after the buffer
@@ -81,6 +85,10 @@ class ReadExcelEasyWIP(plugin.InputPreparationPlugin):
                               "name":'Batch'+parentBatchId+'_SB'+partId+'wip'
                               } 
                             nodes[bufferId]['wip'].append(wipDict)
+            # from now on for the WIP inside stations 
+            totalUnits=notStarted+complete+inProgress               
+            assert (totalUnits==standardBatchUnits or totalUnits==0 or batchId), "not full batch defined in "+stationId
+            
             for node_id, node in nodes.iteritems():
                 pass
                 #print node_id,len(node['wip'])
