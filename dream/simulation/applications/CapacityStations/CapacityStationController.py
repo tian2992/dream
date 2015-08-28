@@ -30,6 +30,7 @@ import simpy
 from dream.simulation.EventGenerator import EventGenerator
 from dream.simulation.applications.CapacityStations.CapacityEntity import CapacityEntity
 from dream.simulation.Globals import G
+from copy import copy
 
 class CapacityStationController(EventGenerator):
     def __init__(self, id=id, name=None, start=0, stop=float('inf'), interval=1,
@@ -363,7 +364,12 @@ class CapacityStationController(EventGenerator):
                     leftSpace=availableSpace
                     # with the below we calculate the projects that can finish in the current period
                     # and sort the entities so the ones that can finish in current period (if any) go in front
-                    for e in entitiesToBeBroken:
+                    
+                    entitiesToBeCheckedIfTheyCanFinish=copy(entitiesToBeBroken)
+                    entitiesToBeCheckedIfTheyCanFinish.sort(key=lambda x: x.requiredCapacity, reverse=False)
+                    entitiesToBeCheckedIfTheyCanFinish.sort(key=lambda x: x.capacityProject.dueDate, reverse=False)
+                    
+                    for e in entitiesToBeCheckedIfTheyCanFinish:
                         e.willFinishNow=False
                         if self.checkIfAProjectCanBeFinishedInStation(e,e.currentStation.next[0],leftCapacity) and\
                               (not self.checkIfProjectNeedsToBeAssembled(e.capacityProject, e.currentStation)) and\
