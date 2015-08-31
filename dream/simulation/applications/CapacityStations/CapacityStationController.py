@@ -368,13 +368,32 @@ class CapacityStationController(EventGenerator):
                     entitiesToBeCheckedIfTheyCanFinish=copy(entitiesToBeBroken)
                     entitiesToBeCheckedIfTheyCanFinish.sort(key=lambda x: x.requiredCapacity, reverse=False)
                     entitiesToBeCheckedIfTheyCanFinish.sort(key=lambda x: x.capacityProject.dueDate, reverse=False)
-                    
+                    entitiesToBeCheckedIfTheyCanFinish.sort(key=lambda x: x.currentStation.next[0].sharedResources.get('priority',-float('inf')),
+                                                            reverse=True)
+                                        
                     for e in entitiesToBeCheckedIfTheyCanFinish:
                         e.willFinishNow=False
+                        # if there are shared resources check if there are projects in the resource with higher priority that can move.
+                        # if yes do not reaise the willFinishNow flag
+                        if e.currentStation.next[0].sharedResources:
+                            priority=e.currentStation.next[0].sharedResources.get('priority',-float('inf'))
+                            sharingStationIds=e.currentStation.next[0].sharedResources.get('stationIds',[])
+                            doNotFinish=False
+                            for otherEntity in entitiesToBeBroken:
+                                if (otherEntity is e) or (otherEntity.capacityProject is e.capacityProject):
+                                    break
+                                if otherEntity.currentStation.next[0].sharedResources.get('priority',-float('inf'))>priority:
+                                    if self.checkIfProjectCanStartInStation(otherEntity.capacityProject, otherEntity.currentStation.next[0])\
+                                        and (not self.checkIfProjectNeedsToBeAssembled(otherEntity.capacityProject, otherEntity.currentStation))\
+                                        and self.checkIfThereIsEnoughSpace(otherEntity, otherEntity.currentStation, leftSpace):
+                                        doNotFinish=True                                 
+                            if doNotFinish:
+                                continue
+                        # if the project can finish raise the flag
                         if self.checkIfAProjectCanBeFinishedInStation(e,e.currentStation.next[0],leftCapacity) and\
                               (not self.checkIfProjectNeedsToBeAssembled(e.capacityProject, e.currentStation)) and\
                               self.checkIfProjectCanStartInStation(e.capacityProject, e.currentStation.next[0]) and\
-                              self.checkIfThereIsEnoughSpace(entity, entityBuffer, leftSpace):
+                              self.checkIfThereIsEnoughSpace(entity, entityBuffer, leftSpace):                            
                             leftCapacity-=e.requiredCapacity
                             if e.currentStation.requireFullProject and \
                                     (not self.checkIfProjectConsumesAssemblySpace(e, e.currentStation)):                                    
@@ -384,7 +403,7 @@ class CapacityStationController(EventGenerator):
                                             x: x.willFinishNow and self.prioritizeIfCanFinish, reverse=True)  
                       
                     # loop through the entities
-                    for entity in entitiesToBeBroken:    
+                    for entity in entitiesToBeBroken:
                         # get buffer where the entity is and the station it requests to get in
                         entityBuffer=entity.currentStation
                         entityStation=entity.currentStation.next[0]
