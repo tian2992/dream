@@ -2,6 +2,24 @@
   "application_configuration": {
     "general": {
       "properties": {
+        "confidenceLevel": {
+          "default": 0.95, 
+          "description": "Confidence level for statistical analysis of stochastic experiments", 
+          "title": "Confidence level", 
+          "type": "number"
+        }, 
+        "currentDate": {
+          "default": "2014/10/01 09:00:00", 
+          "description": "The day the experiment starts, in YYYY/MM/DD HH:MM:SS format", 
+          "title": "SimulationStartTime", 
+          "type": "string"
+        }, 
+        "ke_url": {
+          "default": "", 
+          "description": "The URL for knowledge extraction to access its data for example http: //git.erp5.org/gitweb/dream.git/blob_plain/HEAD: /dream/KnowledgeExtraction/Mockup_Processingtimes.xls", 
+          "title": "URL for Knowledge Extraction Spreadsheet", 
+          "type": "string"
+        }, 
         "maxSimTime": {
           "default": 100, 
           "description": "Length of the simulation run", 
@@ -14,16 +32,16 @@
           "title": "Number of replications", 
           "type": "integer"
         }, 
+        "processTimeout": {
+          "default": 10, 
+          "description": "Number of seconds before the calculation process is interrupted", 
+          "title": "ProcessTimeout", 
+          "type": "number"
+        }, 
         "seed": {
           "default": 1, 
           "description": "The seed of random number generation. If empty the seed will be random", 
           "title": "Seed for random number generator", 
-          "type": "number"
-        },
-        "confidenceLevel": {
-          "default": 0.95, 
-          "description": "Confidence level for statistical analysis of stochastic experiments", 
-          "title": "Confidence level", 
           "type": "number"
         }, 
         "timeUnit": {
@@ -39,25 +57,7 @@
           ], 
           "name": "Time unit", 
           "type": "string"
-        },
-        "currentDate": {
-          "default": "2014/10/01 09:00:00", 
-          "description": "The day the experiment starts, in YYYY/MM/DD HH:MM:SS format", 
-          "title": "SimulationStartTime", 
-          "type": "string"
         }, 
-        "processTimeout": {
-          "default": 10, 
-          "description": "Number of seconds before the calculation process is interrupted", 
-          "title": "ProcessTimeout", 
-          "type": "number"
-        }, 
-        "ke_url": {
-          "default": "", 
-          "description": "The URL for knowledge extraction to access its data for example http: //git.erp5.org/gitweb/dream.git/blob_plain/HEAD: /dream/KnowledgeExtraction/Mockup_Processingtimes.xls", 
-          "title": "URL for Knowledge Extraction Spreadsheet", 
-          "type": "string"
-        }, 		
         "trace": {
           "default": "No", 
           "description": "Create an excel trace file (Yes or No)", 
@@ -171,23 +171,14 @@
       }
     }, 
     "output": {
-      "view_tabular_results": {
+      "view_download_trace": {
         "configuration": {
-          "handsontable_options": {}, 
-          "output_id": "exit_output"
+          "output_id": "download_trace"
         }, 
-        "gadget": "Output_viewSpreadsheet", 
-        "title": "Exit Statistics", 
+        "gadget": "Output_viewDownloadFile", 
+        "title": "Download Trace File", 
         "type": "object_view"
-      },
-      "view_station_utilization": {
-        "configuration": {
-          "output_id": "station_utilization"
-        }, 
-        "gadget": "Output_viewGraph", 
-        "title": "Station Utilization", 
-        "type": "object_view"
-      },
+      }, 
       "view_queue_stats": {
         "configuration": {
           "output_id": "queue_statistics"
@@ -195,13 +186,22 @@
         "gadget": "Output_viewGraph", 
         "title": "Queue Statistics", 
         "type": "object_view"
-      },
-      "view_download_trace": {
+      }, 
+      "view_station_utilization": {
         "configuration": {
-          "output_id": "download_trace"
+          "output_id": "station_utilization"
         }, 
-        "gadget": "Output_viewDownloadFile", 
-        "title": "Download Trace File", 
+        "gadget": "Output_viewGraph", 
+        "title": "Station Utilization", 
+        "type": "object_view"
+      }, 
+      "view_tabular_results": {
+        "configuration": {
+          "handsontable_options": {}, 
+          "output_id": "exit_output"
+        }, 
+        "gadget": "Output_viewSpreadsheet", 
+        "title": "Exit Statistics", 
         "type": "object_view"
       }
     }, 
@@ -219,7 +219,7 @@
         {
           "_class": "dream.plugins.PostProcessQueueStatistics.PostProcessQueueStatistics", 
           "output_id": "queue_statistics"
-        },
+        }, 
         {
           "_class": "dream.plugins.ParseTraceFile.ParseTraceFile", 
           "output_id": "download_trace"
@@ -263,16 +263,7 @@
         }, 
         {
           "properties": {
-            "id": {
-              "default": "E", 
-              "required": true
-            }, 
-            "name": {
-              "default": "Exit", 
-              "type": "string"
-            }
-          }, 
-          "type": "object"
+          }
         }
       ], 
       "css": {
@@ -282,7 +273,7 @@
       }, 
       "description": "A station where entities exits from the system", 
       "name": "Exit", 
-      "shape": "rectangle"
+      "short_id": "E"
     }, 
     "Dream.Machine": {
       "_class": "node", 
@@ -292,43 +283,39 @@
         }, 
         {
           "properties": {
-            "id": {
-              "default": "M", 
-              "required": true, 
-              "type": "string"
+            "interruption": {
+              "name": "Interruptions", 
+              "properties": {
+                "failure": {
+                  "$ref": "#/definitions/_failureDist", 
+                  "required": true
+                }
+              }, 
+              "type": "object"
             }, 
-            "name": {
-              "default": "Machine", 
-              "type": "string"
-            }, 
-            "processingTime": {
-              "$ref": "#/definitions/_dist", 
-              "required": true,
-			  "default":{"Fixed":{"mean":1}}
-            }, 
-            "setupTime": {
-              "$ref": "#/definitions/_dist", 
-              "required": true
-            },
             "loadTime": {
               "$ref": "#/definitions/_dist", 
+              "name": "Load Time", 
+              "priority": 8, 
               "required": true
-            }, 	
+            }, 
             "operationType": {
+              "name": "Operation Type", 
+              "priority": 7, 
               "properties": {
                 "load": {
                   "$ref": "#/definitions/_operationType", 
-                  "description": "Operation type for loading",
+                  "description": "Operation type for loading", 
                   "name": "Load Operation type"
                 }, 
                 "processing": {
                   "$ref": "#/definitions/_operationType", 
-                  "description": "Operation type for processing",
+                  "description": "Operation type for processing", 
                   "name": "Processing Operation type"
                 }, 
                 "setup": {
                   "$ref": "#/definitions/_operationType", 
-                  "description": "Operation type for setup",
+                  "description": "Operation type for setup", 
                   "name": "Setup Operation type"
                 }
               }, 
@@ -338,16 +325,24 @@
                 "processing"
               ], 
               "type": "object"
-            },			
-            "interruption": {
-              "properties": {
-                "failure": {
-                  "$ref": "#/definitions/_failureDist", 
-                  "required": true
+            }, 
+            "processingTime": {
+              "$ref": "#/definitions/_dist", 
+              "default": {
+                "Fixed": {
+                  "mean": 1
                 }
               }, 
-              "type": "object"
-            } 
+              "name": "Processing Time", 
+              "priority": 10, 
+              "required": true
+            }, 
+            "setupTime": {
+              "$ref": "#/definitions/_dist", 
+              "name": "Setup Time", 
+              "priority": 9, 
+              "required": true
+            }
           }, 
           "type": "object"
         }
@@ -358,7 +353,8 @@
         "border": "1px solid #cbc"
       }, 
       "description": "A station processing items for some time given by a distribution", 
-      "name": "Machine"
+      "name": "Machine", 
+      "short_id": "M"
     }, 
     "Dream.Queue": {
       "_class": "node", 
@@ -371,14 +367,6 @@
             "capacity": {
               "$ref": "#/definitions/_capacity", 
               "required": true
-            }, 
-            "id": {
-              "default": "Q", 
-              "type": "string"
-            }, 
-            "name": {
-              "default": "Queue", 
-              "type": "string"
             }, 
             "schedulingRule": {
               "$ref": "#/definitions/_schedulingRule", 
@@ -394,7 +382,8 @@
         "border": "1px solid #bcc"
       }, 
       "description": "A buffer where entites can be hold until the next station is ready to process them", 
-      "name": "Queue"
+      "name": "Queue", 
+      "short_id": "Q"
     }, 
     "Dream.Repairman": {
       "_class": "node", 
@@ -407,15 +396,6 @@
             "capacity": {
               "$ref": "#/definitions/_capacity", 
               "required": true
-            }, 
-            "id": {
-              "default": "R", 
-              "required": true, 
-              "type": "string"
-            }, 
-            "name": {
-              "default": "Repairman", 
-              "type": "string"
             }
           }, 
           "type": "object"
@@ -427,7 +407,8 @@
         "border": "1px solid #cbb"
       }, 
       "description": "A resource that repairs stations in failure", 
-      "name": "Repairman"
+      "name": "Repairman", 
+      "short_id": "R"
     }, 
     "Dream.Source": {
       "_class": "node", 
@@ -437,27 +418,23 @@
         }, 
         {
           "properties": {
-            "id": {
-              "default": "S", 
+            "entity": {
+              "default": "Dream.Part", 
+              "description": "Class used for entities", 
+              "name": "Entity Class", 
               "required": true, 
               "type": "string"
             }, 
-            "name": {
-              "default": "Source", 
-              "type": "string"
-            },
             "interArrivalTime": {
               "$ref": "#/definitions/_dist", 
+              "default": {
+                "Fixed": {
+                  "mean": 2
+                }
+              }, 
               "description": "Inter-arrivaltime", 
-              "required": true,
-			  "default":{"Fixed":{"mean":2}}
-            },
-			"entity": {
-              "default": "Dream.Part", 
-              "description": "EntityClass", 
-              "required": true, 
-              "type": "string"
-            } 
+              "required": true
+            }
           }, 
           "type": "object"
         }
@@ -468,13 +445,14 @@
         "border": "1px solid #bbc"
       }, 
       "description": "A station creating entities", 
-      "name": "Source"
+      "name": "Source", 
+      "short_id": "S"
     }, 
     "definitions": {
       "_capacity": {
         "default": 1, 
-        "name": "Capacity",
         "description": "capacity of the queue. -1 means infinite", 
+        "name": "Capacity", 
         "oneOf": [
           {
             "enum": [
@@ -583,7 +561,6 @@
       }, 
       "_schedulingRule": {
         "default": "FIFO", 
-                "name": "Scheduling Rule",
         "description": "Scheduling Rule, one of FIFO Priority EDD EOD NumStages RPC LPT SPT MS WINQ", 
         "enum": [
           "FIFO", 
@@ -598,6 +575,7 @@
           "WINQ", 
           "WT"
         ], 
+        "name": "Scheduling Rule", 
         "type": "string"
       }, 
       "distributionTypes": {
@@ -606,10 +584,12 @@
           "properties": {
             "mean": {
               "default": 0, 
+              "name": "Mean", 
               "type": "number"
             }, 
             "size": {
               "default": 0, 
+              "name": "Size", 
               "type": "number"
             }
           }, 
@@ -668,6 +648,7 @@
           "properties": {
             "mean": {
               "default": 0, 
+              "name": "Value", 
               "required": true, 
               "type": "number"
             }
@@ -802,6 +783,7 @@
           "type": "string"
         }, 
         "name": {
+          "name": "Name", 
           "type": "string"
         }, 
         "source": {
@@ -828,7 +810,16 @@
           }, 
           "type": "object"
         }, 
+        "id": {
+          "description": "The unique identifier of this node", 
+          "name": "ID", 
+          "priority": 2, 
+          "type": "string"
+        }, 
         "name": {
+          "description": "The name of this node", 
+          "name": "Name", 
+          "priority": 1, 
           "type": "string"
         }
       }, 
@@ -840,7 +831,9 @@
     }
   }, 
   "constraints": {}, 
-  "general": {}, 
+  "general": {
+    "name": "DefaultAllInOneEmpty.json"
+  }, 
   "graph": {
     "edge": {}, 
     "node": {}
