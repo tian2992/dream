@@ -29,20 +29,19 @@ import simpy
 
 from OperatorRouter import Router
 from opAss_LPmethod import opAss_LP
-import Globals
 
 # ===========================================================================
 #               Class that handles the Operator Behavior
 # ===========================================================================
 class SkilledRouter(Router):
-    
+
     # =======================================================================
     #   according to this implementation one machine per broker is allowed
-    #     The Broker is initiated within the Machine and considered as 
+    #     The Broker is initiated within the Machine and considered as
     #                black box for the ManPy end Developer
-    # TODO: we should maybe define a global schedulingRule criterion that will be 
+    # TODO: we should maybe define a global schedulingRule criterion that will be
     #         chosen in case of multiple criteria for different Operators
-    # ======================================================================= 
+    # =======================================================================
     def __init__(self,id='SkilledRouter01',name='SkilledRouter01',sorting=False,outputSolutions=True,
                  weightFactors=[2, 1, 0, 2, 0, 1], tool={},checkCondition=False,twoPhaseSearch=False,**kw):
         Router.__init__(self)
@@ -57,19 +56,19 @@ class SkilledRouter(Router):
         self.tool=tool
         self.checkCondition=checkCondition
         self.twoPhaseSearch=twoPhaseSearch
-                
+
     #===========================================================================
     #                         the initialize method
     #===========================================================================
     def initialize(self):
-        Router.initialize(self)        
+        Router.initialize(self)
         self.allocation=False
         self.waitEndProcess=False
         self.pendingQueues=[]
         self.pendingMachines=[]
         self.previousSolution={}
         self.solutionList=[]
-        
+
     # =======================================================================
     #                          the run method
     # =======================================================================
@@ -78,12 +77,12 @@ class SkilledRouter(Router):
     read the pendingEntities currentStations, these are the stations (queues) that may be signalled
     '''
     def run(self):
-        
+
         while 1:
             # wait until the router is called
-            
+
             self.expectedSignals['isCalled']=1
-            
+
             yield self.isCalled
 
             transmitter, eventTime=self.isCalled.value
@@ -99,26 +98,26 @@ class SkilledRouter(Router):
                     self.printTrace('','there are NO more events for now')
                     break
             self.printTrace('','=-'*15)
-            
+
             from Globals import G
-            
+
             if self.allocation:
                 #===================================================================
                 # # XXX wait for the interval time to finish (10 minutes between reassignments
                 #===================================================================
                 '''not implemented yet'''
-                
+
                 #===================================================================
                 # # find stations that are in position to process
                 #===================================================================
                 self.availableStations=[]
                 for station in G.MachineList:
                     if station.checkIfActive():
-                        self.availableStations.append(station)               
-                
+                        self.availableStations.append(station)
+
                 #===================================================================
                 # # XXX if the resources are still assigned then un-assign them from the machines they are currently assigned
-                # #     the same for all the objects exits 
+                # #     the same for all the objects exits
                 #===================================================================
                 for operator in [x for x in G.OperatorsList if x.isAssignedTo()]:
                     operator.unAssign()
@@ -129,7 +128,7 @@ class SkilledRouter(Router):
                 #===================================================================
                 for station in G.MachineList:
                     station.operatorPool.operators=[]
-                
+
                 #===================================================================
                 # # XXX calculate the WIP of each station
                 #===================================================================
@@ -146,7 +145,7 @@ class SkilledRouter(Router):
                 # # stations of the line and their corresponding WIP
                 # TODO: the WIP of the stations must be normalised to the max WIP possible on that station
                 #===================================================================
-                
+
                 # identify the last time that there was an assignment
                 maxLastAssignment=0
                 for record in self.solutionList:
@@ -159,20 +158,20 @@ class SkilledRouter(Router):
                     for record in self.solutionList:
                         if station.id in record["allocation"].values():
                             lastAssignmentTime=record["time"]
-                    
-                    # normalise the lastAssignmentTime based on the maxLastAssignment. 
+
+                    # normalise the lastAssignmentTime based on the maxLastAssignment.
                     if maxLastAssignment:
                         lastAssignmentTime=1.0-float(lastAssignmentTime/float(maxLastAssignment))
-                    
+
                     # it there is definition of 'technology' to group machines add this
                     if station.technology:
-                        self.availableStationsDict[str(station.id)]={'stationID':station.technology,'machineID':station.id, 
+                        self.availableStationsDict[str(station.id)]={'stationID':station.technology,'machineID':station.id,
                                                                 'WIP':station.wip,'lastAssignment':lastAssignmentTime}
                     # otherwise add just the id
                     else:
-                        self.availableStationsDict[str(station.id)]={'stationID':station.id, 
-                                                                'WIP':station.wip,'lastAssignment':lastAssignmentTime}                       
-                        
+                        self.availableStationsDict[str(station.id)]={'stationID':station.id,
+                                                                'WIP':station.wip,'lastAssignment':lastAssignmentTime}
+
                 #===================================================================
                 # # operators and their skills set
                 #===================================================================
@@ -184,7 +183,7 @@ class SkilledRouter(Router):
                         newSkill=skill
                         mach=Globals.findObjectById(skill)
                         # if there is 'technology' defined for the stations send this to the LP solver
-                        if mach.technology: 
+                        if mach.technology:
                             newSkill=mach.technology
                         if newSkill not in newSkillsList:
                             newSkillsList.append(newSkill)
@@ -196,12 +195,12 @@ class SkilledRouter(Router):
                 for operator in G.OperatorsList:
                     if operator.available and operator.onShift and not operator.onBreak:
                         self.availableOperatorList.append(operator.id)
-                        
-                        
+
+
                 LPFlag=True
                 if self.checkCondition:
-                    LPFlag=self.checkIfAllocationShouldBeCalled() 
-                        
+                    LPFlag=self.checkIfAllocationShouldBeCalled()
+
                 #===================================================================
                 # # XXX run the LP assignment algorithm
                 # #     should return a list of correspondences
@@ -222,7 +221,7 @@ class SkilledRouter(Router):
                                 machinesForSecondPhaseDict[stationId] = self.availableStationsDict[stationId]
                                 del self.availableStationsDict[stationId]
                         # run the LP method only for the machines that are not blocked
-                        solution=opAss_LP(self.availableStationsDict, self.availableOperatorList, 
+                        solution=opAss_LP(self.availableStationsDict, self.availableOperatorList,
                                           self.operators, previousAssignment=self.previousSolution,
                                           weightFactors=self.weightFactors,Tool=self.tool)
                         # create a list with the operators that were sent to the LP but did not get allocated
@@ -238,13 +237,13 @@ class SkilledRouter(Router):
                         # if there are machines and operators for the second phase
                         # run again the LP for machines and operators that are not in the former solution
                         if machinesForSecondPhaseDict and operatorsForSecondPhaseList:
-                            secondPhaseSolution=opAss_LP(machinesForSecondPhaseDict, operatorsForSecondPhaseList, 
+                            secondPhaseSolution=opAss_LP(machinesForSecondPhaseDict, operatorsForSecondPhaseList,
                                               self.operators, previousAssignment=self.previousSolution,
                                               weightFactors=self.weightFactors,Tool=self.tool)
                             # update the solution with the new LP results
                             solution.update(secondPhaseSolution)
                     else:
-                        solution=opAss_LP(self.availableStationsDict, self.availableOperatorList, 
+                        solution=opAss_LP(self.availableStationsDict, self.availableOperatorList,
                                           self.operators, previousAssignment=self.previousSolution,
                                           weightFactors=self.weightFactors,Tool=self.tool)
                 else:
@@ -254,22 +253,22 @@ class SkilledRouter(Router):
                     for operatorID in solution.keys():
                         if not operatorID in self.availableOperatorList:
                             del solution[operatorID]
-                    
+
 #                 print '-------'
 #                 print self.env.now, solution
 #                 print 'time needed',time.time()-startLP
-                
+
                 self.solutionList.append({
                     "time":self.env.now,
                     "allocation":solution
                 })
-                
+
                 # XXX assign the operators to operatorPools
                 # pendingStations/ available stations not yet given operator
                 self.pendingStations=[]
                 from Globals import findObjectById
                 # apply the solution
-                
+
                 # loop through the stations. If there is a station that should change operator
                 # set the operator dedicated to None and also release operator
                 for station in G.MachineList:
@@ -282,7 +281,7 @@ class SkilledRouter(Router):
                             operator.operatorDedicatedTo=None
                             if not station.isProcessing:
                                 station.releaseOperator()
-                
+
                 # loop through the entries in the solution dictionary
                 for operatorID in solution.keys():
                     # obtain the operator and the station
@@ -305,10 +304,10 @@ class SkilledRouter(Router):
                     station.operatorToGet=operator
                     # remove the operator id from availableOperatorList
                     self.availableOperatorList.remove(operatorID)
-                    
+
                 #===================================================================
                 # # XXX signal the stations that the assignment is complete
-                #===================================================================             
+                #===================================================================
                 # if the operator is free the station can be signalled right away
                 stationsProcessingLast=[]
                 toBeSignalled=list(self.toBeSignalled)
@@ -322,7 +321,7 @@ class SkilledRouter(Router):
                             continue
                     # signal the station so that it gets the operator
                     self.signalStation(station, operator)
-                
+
                 # else wait for signals that operator became available and signal the stations
                 self.expectedFinishSignalsDict={}
                 self.expectedFinishSignals=[]
@@ -336,17 +335,17 @@ class SkilledRouter(Router):
                         if signal in receivedEvent:
                             transmitter, eventTime=signal.value
                             assert eventTime==self.env.now, 'the station finished signal must be received on the time of request'
-                            self.expectedFinishSignals.remove(signal)                   
+                            self.expectedFinishSignals.remove(signal)
                             del self.expectedFinishSignalsDict[transmitter.id]
                             # signal also the other stations that should be signalled
                             for id in solution.keys():
                                 operator=findObjectById(id)
                                 station=findObjectById(solution[id])
-                                signal=True                                       
+                                signal=True
                                 # signal only the stations in the original list
                                 if station not in self.toBeSignalled:
                                     signal=False
-                                # signal only if the operator is free 
+                                # signal only if the operator is free
                                 if operator.workingStation:
                                     if operator.workingStation.isProcessing\
                                              or (not (operator.workingStation.timeLastEntityEntered==self.env.now)):
@@ -354,8 +353,8 @@ class SkilledRouter(Router):
                                 if signal:
                                     # signal the station so that it gets the operator
                                     self.signalStation(station, operator)
-          
-            
+
+
             #===================================================================
             # default behaviour
             #===================================================================
@@ -370,13 +369,13 @@ class SkilledRouter(Router):
                 self.unAssignExits()
                 # signal the stations that ought to be signalled
                 self.signalOperatedStations()
-            
-            
+
+
             self.previousSolution=solution
             self.printTrace('', 'router exiting')
             self.printTrace('','=-'*20)
             self.exitActions()
-    
+
     # =======================================================================
     #                 signal the station or the Queue to impose the assignment
     # =======================================================================
@@ -388,14 +387,14 @@ class SkilledRouter(Router):
                 self.printTrace('router', 'signalling broker of'+' '*50+station.id)
                 self.toBeSignalled.remove(station)
         # signal the queue proceeding the station
-        else:         
+        else:
             if station.canAccept()\
                     and any(type=='Load' for type in station.multOperationTypeList):
                 if station.expectedSignals['loadOperatorAvailable']:
                     self.sendSignal(receiver=station, signal=station.loadOperatorAvailable)
                     self.printTrace('router', 'signalling'+' '*50+station.id)
-                    self.toBeSignalled.remove(station)      
-                    
+                    self.toBeSignalled.remove(station)
+
     # =======================================================================
     #                 return control to the Machine.run
     # =======================================================================
@@ -403,13 +402,13 @@ class SkilledRouter(Router):
         Router.exitActions(self)
         self.allocation=False
         self.waitEndProcess=False
-        
+
     def checkIfAllocationShouldBeCalled(self):
         from Globals import G
-        # loop through the operators and the machines. 
+        # loop through the operators and the machines.
         # If for one the shift ended or started right now allocation is needed
         for obj in G.OperatorsList+G.MachineList:
-            
+
             if (obj.timeLastShiftEnded==self.env.now) or (obj.timeLastShiftStarted==self.env.now):
                 return True
         # loop through the machines
@@ -417,20 +416,20 @@ class SkilledRouter(Router):
             # if one machine is starved more than 30 then allocation is needed
             if (self.env.now-machine.timeLastEntityLeft>=30) and (not machine.getActiveObjectQueue()):
                 return True
-            # check for the previous buffer. If it is more than 80% full allocation is needed 
+            # check for the previous buffer. If it is more than 80% full allocation is needed
             previousQueue=self.getPreviousQueue(machine)
             if previousQueue:
                 if float(len(previousQueue.getActiveObjectQueue()))/float(previousQueue.capacity)>=0.8:
                     return True
-        return False   
-    
+        return False
+
     def postProcessing(self):
         if self.outputSolutions:
             self.solutionList.append({
                     "time":self.env.now,
                     "allocation":{}
                 })
-    
+
     def outputResultsJSON(self):
         if self.outputSolutions:
             from Globals import G
@@ -439,7 +438,7 @@ class SkilledRouter(Router):
                     'results': {}}
             json['results']['solutionList'] = self.solutionList
             G.outputJSON['elementList'].append(json)
-    
+
     # for a machine gets the decomposition and the buffer (if any)
     def getPreviousList(self, machine):
         previousList=[]
@@ -450,7 +449,7 @@ class SkilledRouter(Router):
             previousList.append(predecessor)
             predecessor=predecessor.previous[0]
         return previousList
-    
+
     # for a machine gets the previous queue (if any)
     def getPreviousQueue(self, machine):
         predecessor=machine.previous[0]
@@ -461,7 +460,7 @@ class SkilledRouter(Router):
                 return predecessor
             predecessor=predecessor.previous[0]
 
-    
+
     # for a machine gets a list with the parallel machines
     def getParallelMachinesList(self, machine):
         alreadyConsidered=[machine]
@@ -482,6 +481,5 @@ class SkilledRouter(Router):
                     break
                 nextObject=nextObject.next[0]
         return parallelMachinesList
-    
-    
-    
+
+
