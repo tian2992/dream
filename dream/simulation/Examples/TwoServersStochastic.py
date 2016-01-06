@@ -32,10 +32,10 @@ def main():
     print E.Exits
     
     # calculate confidence interval using the Knowledge Extraction tool
-    from dream.KnowledgeExtraction.ConfidenceIntervals import Intervals
-    from dream.KnowledgeExtraction.StatisticalMeasures import BasicStatisticalMeasures
-    BSM=BasicStatisticalMeasures()
-    lb, ub = Intervals().ConfidIntervals(E.Exits, 0.95)
+    from dream.KnowledgeExtraction.ConfidenceIntervals import ConfidenceIntervals
+    from dream.KnowledgeExtraction.StatisticalMeasures import StatisticalMeasures
+    BSM=StatisticalMeasures()
+    lb, ub = ConfidenceIntervals().ConfidIntervals(E.Exits, 0.95)
     print 'the 95% confidence interval for the throughput is:'
     print 'lower bound:', lb 
     print 'mean:', BSM.mean(E.Exits)
