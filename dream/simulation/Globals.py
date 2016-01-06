@@ -26,7 +26,7 @@ carries some global variables
 '''
 
 #from SimPy.Simulation import *
-from Machine import Machine
+import Machine
 from Queue import Queue
 from Repairman import Repairman
 import xlwt
